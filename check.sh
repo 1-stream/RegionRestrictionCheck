@@ -751,36 +751,36 @@ function MediaUnlockTest_PlutoTV() {
 
 }
 
-function MediaUnlockTest_MaxCom() {
-    local GetToken=$(curl $curlArgs -${1} -sS "https://default.any-any.prd.api.max.com/token?realm=bolt&deviceId=afbb5daa-c327-461d-9460-d8e4b3ee4a1f"   -H 'x-device-info: beam/5.0.0 (desktop/desktop; Windows/10; afbb5daa-c327-461d-9460-d8e4b3ee4a1f/da0cdd94-5a39-42ef-aa68-54cbc1b852c3)' -H 'x-disco-client: WEB:10:beam:5.2.1' 2>&1)
+function MediaUnlockTest_HBOMax() {
+    local GetToken=$(curl $curlArgs -${1} -sS "https://default.any-any.prd.api.hbomax.com/token?realm=bolt&deviceId=afbb5daa-c327-461d-9460-d8e4b3ee4a1f"   -H 'x-device-info: beam/5.0.0 (desktop/desktop; Windows/10; afbb5daa-c327-461d-9460-d8e4b3ee4a1f/da0cdd94-5a39-42ef-aa68-54cbc1b852c3)' -H 'x-disco-client: WEB:10:beam:5.2.1' 2>&1)
     if [[ "$GetToken" == "curl"* ]]; then
-        echo -n -e "\r Max.com:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
     local Token=$(echo $GetToken | jq .data.attributes.token | tr -d '"' )
-    local APITemp=$(curl $curlArgs -${1} -sS "https://default.any-any.prd.api.max.com/session-context/headwaiter/v1/bootstrap" -X POST -b "st=${Token}")
+    local APITemp=$(curl $curlArgs -${1} -sS "https://default.any-any.prd.api.hbomax.com/session-context/headwaiter/v1/bootstrap" -X POST -b "st=${Token}")
     local domain=$(echo $APITemp | jq .routing.domain | tr -d '"')
     local tenant=$(echo $APITemp | jq .routing.tenant | tr -d '"')
     local env=$(echo $APITemp | jq .routing.env | tr -d '"')
     local homeMarket=$(echo $APITemp | jq .routing.homeMarket | tr -d '"')
     local tmpresult=$(curl $curlArgs -${1} -sS "https://default.$tenant-$homeMarket.$env.$domain/users/me" -b "st=${Token}" 2>&1)
     local result=$(echo $tmpresult | jq .data.attributes.currentLocationTerritory | tr -d '"')
-    local availableRegion=$(curl $curlArgs -${1} -sSL "https://www.max.com/" 2>&1 | grep -woP '"url":"/[a-z]{2}/[a-z]{2}"' | cut -f4 -d'"' | cut -f2 -d'/' | sort -n | uniq | xargs | tr a-z A-Z)
-    local isVPN=$(curl $curlArgs -${1} -sS 'https://default.any-any.prd.api.max.com/any/playback/v1/playbackInfo' -b 'st=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJ0b2tlbi0wOWQxOTg4Yy1mZmUzLTQxMDEtOWI5My0yNDU1ZTkyNGQ1YjYiLCJpc3MiOiJmcGEtaXNzdWVyIiwic3ViIjoiVVNFUklEOmJvbHQ6YjYzOTgxZWQtNzA2MC00ZGYwLThkZGItZjA2YjFkNWRjZWVkIiwiaWF0IjoxNzQzODQwMzgwLCJleHAiOjIwNTkyMDAzODAsInR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJzdWJkaXZpc2lvbiI6ImJlYW1fYW1lciIsInNjb3BlIjoiZGVmYXVsdCIsImlpZCI6IjQwYTgzZjNlLTY4OTktNDE3Mi1hMWY2LWJjZDVjN2ZkNjA4NSIsInZlcnNpb24iOiJ2MyIsImFub255bW91cyI6ZmFsc2UsImRldmljZUlkIjoiNWY3YzViZjQtYjc4Ny00NDRjLWJhYTYtMzU5MzgwYWFiM2RmIn0.f5HTgIV2v0nQQDp5LQG0xqLrxyACdvnMDiWO_viX_CUGqtc5ncSjp_LgM30QFkkMnINFhzKEGRpsZvb-o3Pj_Z39uRBr5LCeiCPR7ssV-_SXyRFVRRDEB2lpxyz7jmdD1SxvA06HnEwTbZQzlbZ7g9GXq02yNdEfHlqYEh_4WF88UbXfeieYTd4TH7kwN1RE50NfQUS6f0WmzpAbpiULyd87mpTeynchFNMMz-YHVzZ_-nDW6geihXc3tS0FKVSR8fdOSPQFzEYOLCfhInufiPahiXI-OKF89aShAqM-y4Hx_eukGnsq3mO5wa3unnqVr9Kzc61BIhHh1Hs2bqYiYg;'  2>&1 )
+    local availableRegion=$(curl $curlArgs -${1} -sSL "https://www.hbomax.com/" 2>&1 | grep -woP '"url":"/[a-z]{2}/[a-z]{2}"' | cut -f4 -d'"' | cut -f2 -d'/' | sort -n | uniq | xargs | tr a-z A-Z)
+    local isVPN=$(curl $curlArgs -${1} -sS 'https://default.any-any.prd.api.hbomax.com/any/playback/v1/playbackInfo' -b 'st=eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJ0b2tlbi0wOWQxOTg4Yy1mZmUzLTQxMDEtOWI5My0yNDU1ZTkyNGQ1YjYiLCJpc3MiOiJmcGEtaXNzdWVyIiwic3ViIjoiVVNFUklEOmJvbHQ6YjYzOTgxZWQtNzA2MC00ZGYwLThkZGItZjA2YjFkNWRjZWVkIiwiaWF0IjoxNzQzODQwMzgwLCJleHAiOjIwNTkyMDAzODAsInR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJzdWJkaXZpc2lvbiI6ImJlYW1fYW1lciIsInNjb3BlIjoiZGVmYXVsdCIsImlpZCI6IjQwYTgzZjNlLTY4OTktNDE3Mi1hMWY2LWJjZDVjN2ZkNjA4NSIsInZlcnNpb24iOiJ2MyIsImFub255bW91cyI6ZmFsc2UsImRldmljZUlkIjoiNWY3YzViZjQtYjc4Ny00NDRjLWJhYTYtMzU5MzgwYWFiM2RmIn0.f5HTgIV2v0nQQDp5LQG0xqLrxyACdvnMDiWO_viX_CUGqtc5ncSjp_LgM30QFkkMnINFhzKEGRpsZvb-o3Pj_Z39uRBr5LCeiCPR7ssV-_SXyRFVRRDEB2lpxyz7jmdD1SxvA06HnEwTbZQzlbZ7g9GXq02yNdEfHlqYEh_4WF88UbXfeieYTd4TH7kwN1RE50NfQUS6f0WmzpAbpiULyd87mpTeynchFNMMz-YHVzZ_-nDW6geihXc3tS0FKVSR8fdOSPQFzEYOLCfhInufiPahiXI-OKF89aShAqM-y4Hx_eukGnsq3mO5wa3unnqVr9Kzc61BIhHh1Hs2bqYiYg;'  2>&1 )
     # Token may expire.
     if [[ "$availableRegion" == *"$result"* ]] && [ -n "$result" ]; then
         if [[ "$isVPN" == *"VPN"* ]]; then 
-            echo -n -e "\r Max.com:\t\t\t\t${Font_Red}No  (VPN Detected;Region: $result)${Font_Suffix}\n"
+            echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}No  (VPN Detected;Region: $result)${Font_Suffix}\n"
             return
         fi
-        echo -n -e "\r Max.com:\t\t\t\t${Font_Green}Yes (Region: $result)${Font_Suffix}\n"
+        echo -n -e "\r HBO Max:\t\t\t\t${Font_Green}Yes (Region: $result)${Font_Suffix}\n"
         return
     else
-        echo -n -e "\r Max.com:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
         return
     fi
 
-    echo -n -e "\r Max.com:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+    echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
     return
 
 }
@@ -3951,11 +3951,11 @@ function NA_UnlockTest() {
     MediaUnlockTest_Starz ${1} &
     MediaUnlockTest_Philo ${1} &
     MediaUnlockTest_FXNOW ${1} &
-    MediaUnlockTest_MaxCom ${1} &
+    MediaUnlockTest_HBOMax ${1} &
     # MediaUnlockTest_TLCGO ${1} & # Wait to fix.
     )
     wait
-    local array=("FOX:" "Hulu:" "NFL+" "ESPN+:" "MGM+:" "Starz:" "Philo:" "FXNOW:" "Max.com")
+    local array=("FOX:" "Hulu:" "NFL+" "ESPN+:" "MGM+:" "Starz:" "Philo:" "FXNOW:" "HBO Max")
     echo_Result ${result} ${array}
     local result=$(
     MediaUnlockTest_Shudder ${1} &
@@ -4081,7 +4081,7 @@ function HK_UnlockTest() {
 	    MediaUnlockTest_ViuTV ${1} &
 	    MediaUnlockTest_MyTVSuper ${1} &
 	    # MediaUnlockTest_HBOGO_ASIA ${1} &
-        MediaUnlockTest_MaxCom ${1} &
+        MediaUnlockTest_HBOMax ${1} &
         MediaUnlockTest_HoyTV ${1} &
         MediaUnlockTest_BahamutAnime ${1} &
         MediaUnlockTest_NBATV ${1} &
@@ -4094,12 +4094,12 @@ function HK_UnlockTest() {
 	    # MediaUnlockTest_MyTVSuper ${1} &
 	    # MediaUnlockTest_HBOGO_ASIA ${1} &
         MediaUnlockTest_HoyTV ${1} &
-        MediaUnlockTest_MaxCom ${1} &
+        MediaUnlockTest_HBOMax ${1} &
 	    # MediaUnlockTest_BilibiliHKMCTW ${1} &
 	)
     fi
     wait
-    local array=("Now E:" "Viu.TV:" "MyTVSuper:" "Max.com:" "HOY TV" "BiliBili Hongkong/Macau/Taiwan:" "Bahamut Anime:" "NBA TV:")
+    local array=("Now E:" "Viu.TV:" "MyTVSuper:" "HBO Max:" "HOY TV" "BiliBili Hongkong/Macau/Taiwan:" "Bahamut Anime:" "NBA TV:")
     echo_Result ${result} ${array}
     echo "======================================="
 }
@@ -4115,7 +4115,7 @@ function TW_UnlockTest() {
     MediaUnlockTest_HamiVideo ${1} &
     MediaUnlockTest_Catchplay ${1} &
     # MediaUnlockTest_HBOGO_ASIA ${1} &
-    MediaUnlockTest_MaxCom ${1} &
+    MediaUnlockTest_HBOMax ${1} &
     MediaUnlockTest_BahamutAnime ${1} &
     MediaUnlockTest_FridayVideo ${1} &
     MediaUnlockTest_ofiii ${1} &
@@ -4123,7 +4123,7 @@ function TW_UnlockTest() {
     # MediaUnlockTest_BilibiliTW ${1} &
     )
     wait
-    local array=("KKTV:" "LiTV:" "ofiii:" "MyVideo:" "4GTV.TV:" "LineTV.TW:" "Hami Video:" "CatchPlay+:" "Max.com" "Bahamut Anime:" "Friday Video:" "Bilibili Taiwan Only:")
+    local array=("KKTV:" "LiTV:" "ofiii:" "MyVideo:" "4GTV.TV:" "LineTV.TW:" "Hami Video:" "CatchPlay+:" "HBO Max" "Bahamut Anime:" "Friday Video:" "Bilibili Taiwan Only:")
     echo_Result ${result} ${array}
     echo "======================================="
 }
@@ -4316,11 +4316,11 @@ function SEA_UnlockTest(){
     echo "==========[ SouthEastAsia ]============"
     local result=$(
     # MediaUnlockTest_HBOGO_ASIA ${1} &
-    MediaUnlockTest_MaxCom ${1} &
+    MediaUnlockTest_HBOMax ${1} &
     MediaUnblockTest_BGlobalSEA ${1} &
     )
     wait
-    local array=("Max.com:" "B-Global SouthEastAsia:")
+    local array=("HBO Max:" "B-Global SouthEastAsia:")
     echo_Result ${result} ${array}
     ShowRegion SG
     local result=$(
