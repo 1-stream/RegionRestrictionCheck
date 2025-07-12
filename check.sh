@@ -493,12 +493,15 @@ function MediaUnlockTest_Dazn() {
         echo -n -e "\r Dazn:\t\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    isAllowed=$(echo $tmpresult | python -m json.tool 2>/dev/null | grep 'isAllowed' | awk '{print $2}' | cut -f1 -d',')
-    local result=$(echo $tmpresult | python -m json.tool 2>/dev/null | grep '"GeolocatedCountry":' | awk '{print $2}' | cut -f2 -d'"')
+    if [[ "$tmpresult" == *"Security policy has been breached"* ]]; then
+        echo -n -e "\r Dazn:\t\t\t\t\t${Font_Red}No  (Banned)${Font_Suffix}\n"
+        return
+    fi
+    local isAllowed=$(echo $tmpresult | jq .Region.isAllowed)
+    local region=$(echo $tmpresult | jq .Region.GeolocatedCountry | tr -d '"')
 
     if [[ "$isAllowed" == "true" ]]; then
-        local CountryCode=$(echo $result | tr [:lower:] [:upper:])
-        echo -n -e "\r Dazn:\t\t\t\t\t${Font_Green}Yes (Region: ${CountryCode})${Font_Suffix}\n"
+        echo -n -e "\r Dazn:\t\t\t\t\t${Font_Green}Yes (Region: ${region^^})${Font_Suffix}\n"
         return
     elif [[ "$isAllowed" == "false" ]]; then
         echo -n -e "\r Dazn:\t\t\t\t\t${Font_Red}No${Font_Suffix}\n"
