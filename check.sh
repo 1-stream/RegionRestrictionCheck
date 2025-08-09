@@ -1026,21 +1026,30 @@ function MediaUnlockTest_MGStage() {
 }
 
 function MediaUnlockTest_ParamountPlus() {
-    local result=$(curl $curlArgs -${1} -Ss -o /dev/null -L --max-time 10 -w '%{url_effective}\n' "https://www.paramountplus.com/" 2>&1)
+    local result=$(curl $curlArgs -${1} -Ss -o /dev/null -L --max-time 10 -w '%{http_code}_%{url_effective}\n' "https://www.paramountplus.com/" --tlsv1.3 2>&1)
     if [[ "$result" == "curl"* ]]; then
         echo -n -e "\r Paramount+:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
 
-    if [[ "$result" == *"intl"* ]]; then
+    if [[ "$result" == *"intl"* ]] || [[ "$result" == "403"* ]]; then
         echo -n -e "\r Paramount+:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
         return
+    elif [[ "$result" == "200"* ]]; then
+        local region=$(echo $result | cut -f4 -d '/')
+        if [[ -z "$region" ]]; then
+            echo -n -e "\r Paramount+:\t\t\t\t${Font_Green}Yes (Region: US)${Font_Suffix}\n"
+            return
+        else
+            echo -n -e "\r Paramount+:\t\t\t\t${Font_Green}Yes (Region: ${region^^})${Font_Suffix}\n"
+            return
+        fi
     else
-        echo -n -e "\r Paramount+:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        echo -n -e "\r Paramount+:\t\t\t\t${Font_Red}Failed (Unknown Resp)${Font_Suffix}\n"
         return
     fi
 
-    echo -n -e "\r Paramount+:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+    echo -n -e "\r Paramount+:\t\t\t\t${Font_Red}Failed${Font_Suffix}\n"
     return
 
 }
