@@ -3948,6 +3948,20 @@ function MediaUnlockTest_DStv() {
 
 }
 
+function MediaUnlockTest_beIN_Sports() {
+    local result=$(curl $curlArgs -${1} -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://d6m3sfa7e58z5.cloudfront.net/out/v1/3b0660e05eed4d769521eb0275aab3ab/index.mpd")
+    if [ "$result" = "000" ]; then
+        echo -n -e "\r beIN Sports:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+    elif [ "$result" = "200" ]; then
+        echo -n -e "\r beIN Sports:\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+    elif [ "$result" = "403" ]; then
+        echo -n -e "\r beIN Sports:\t\t\t${Font_Red}No${Font_Suffix}\n"
+    else
+        echo -n -e "\r beIN Sports:\t\t\t${Font_Red}Failed (Unexpected Result: $result)${Font_Suffix}\n"
+    fi
+}
+
+
 function echo_Result() {
     for((i=0;i<${#array[@]};i++))
     do
@@ -4367,10 +4381,11 @@ function SEA_UnlockTest(){
     ShowRegion ID
     local result=$(
     MediaUnlockTest_Vidio ${1} &
+    MediaUnlockTest_beIN_Sports ${1} &
     MediaUnblockTest_BGlobalID ${1} &
     )
     wait
-    local array=("Vidio" "B-Global Indonesia Only")
+    local array=("Vidio" "beIN Sports" "B-Global Indonesia Only")
     echo_Result ${result} ${array}
     ShowRegion VN
     local result=$(
