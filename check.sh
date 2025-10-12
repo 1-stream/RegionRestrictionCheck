@@ -659,19 +659,19 @@ function MediaUnlockTest_wowow() {
 }
 
 function MediaUnlockTest_TVer() {
-    local tmpresult=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -fsLI -X GET --write-out %{http_code} --output /dev/null "https://playback.api.streaks.jp/v1/projects/tver-simul-ntv/medias/ref:simul-ntv" -H 'x-streaks-api-key: ntv'  2>&1)
-    
-    if [[ "$tmpresult" == "200" ]]; then
-        echo -n -e "\r TVer:\t\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
-        return
-    elif [[ "$tmpresult" == "403" ]]; then
-        echo -n -e "\r TVer:\t\t\t\t\t${Font_Red}No${Font_Suffix}\n"
-        return
-    elif [[ "$tmpresult" == "000" ]]; then
+    local tmpresult=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -fSsL "https://playback.api.streaks.jp/v1/projects/tver-simul-ntv/medias/ref:simul-ntv" -H 'x-streaks-api-key: ntv'  2>&1)
+    if [[ "$tmpresult" = "curl"* ]]; then
         echo -n -e "\r TVer:\t\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
+    fi
+    if [[ "$tmpresult" == *"project_id"* ]]; then
+        echo -n -e "\r TVer:\t\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    elif [[ "$tmpresult" == *"403"* ]]; then
+        echo -n -e "\r TVer:\t\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        return
     else
-        echo -n -e "\r TVer:\t\t\t\t\t${Font_Red}Unknown (Code: $tmpresult)${Font_Suffix}\n"
+        echo -n -e "\r TVer:\t\t\t\t\t${Font_Red}Unknown${Font_Suffix}\n"
     fi
 }
 
