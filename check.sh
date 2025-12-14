@@ -410,8 +410,8 @@ function MediaUnlockTest_Netflix() {
         echo -n -e "\r Netflix:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$( echo "tmpresult1" | grep "og:video" )
-    local result2=$( echo "tmpresult2" | grep "og:video" )
+    local result1=$( echo "$tmpresult1" | grep "og:video" )
+    local result2=$( echo "$tmpresult2" | grep "og:video" )
     local region1=$( echo -e $(echo "$tmpresult1" | grep 'netflix.reactContext' | awk -F= '{print $2}' | awk -F\; '{print $1}') | tr -d '[:cntrl:]' | sed 's/\^[^$]*\$//g' | jq '.models.geo.data.requestCountry.id' | tr -d '"' )
 
     if [ -n "$result1" ] || [ -n "$result2" ]; then
