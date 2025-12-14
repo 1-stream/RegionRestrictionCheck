@@ -410,14 +410,14 @@ function MediaUnlockTest_Netflix() {
         echo -n -e "\r Netflix:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$( echo -e $(echo "$tmpresult1" | grep 'netflix.reactContext' | awk -F= '{print $2}' | awk -F\; '{print $1}') | tr -d '[:cntrl:]' | sed 's/\^[^$]*\$//g' | jq '.models.nmTitleGQL.data.metaData.isAvailable' )
-    local result2=$( echo -e $(echo "$tmpresult2" | grep 'netflix.reactContext' | awk -F= '{print $2}' | awk -F\; '{print $1}') | tr -d '[:cntrl:]' | sed 's/\^[^$]*\$//g' | jq '.models.nmTitleGQL.data.metaData.isAvailable' )
+    local result1=$( echo "tmpresult1" | grep "og:video" )
+    local result2=$( echo "tmpresult2" | grep "og:video" )
     local region1=$( echo -e $(echo "$tmpresult1" | grep 'netflix.reactContext' | awk -F= '{print $2}' | awk -F\; '{print $1}') | tr -d '[:cntrl:]' | sed 's/\^[^$]*\$//g' | jq '.models.geo.data.requestCountry.id' | tr -d '"' )
 
-    if [[ "$result1" == "true" ]] || [[ "$result2" == "true" ]]; then
+    if [ -n "$result1" ] || [ -n "$result2" ]; then
         echo -n -e "\r Netflix:\t\t\t\t${Font_Green}Yes (Region: ${region1})${Font_Suffix}\n"
         return
-    elif [[ "$result1" == "false" ]] || [[ "$result2" == "false" ]]; then
+    else
         echo -n -e "\r Netflix:\t\t\t\t${Font_Yellow}Originals Only (Region: ${region1})${Font_Suffix}\n"
         return
     fi
