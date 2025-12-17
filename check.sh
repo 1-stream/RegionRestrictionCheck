@@ -497,6 +497,10 @@ function MediaUnlockTest_Dazn() {
         echo -n -e "\r Dazn:\t\t\t\t\t${Font_Red}No  (Banned)${Font_Suffix}\n"
         return
     fi
+    if [[ "$tmpresult" == *"Forbidden"* ]]; then
+        echo -n -e "\r Dazn:\t\t\t\t\t${Font_Red}No  (Banned)${Font_Suffix}\n"
+        return
+    fi
     local isAllowed=$(echo $tmpresult | jq .Region.isAllowed)
     local region=$(echo $tmpresult | jq .Region.GeolocatedCountry | tr -d '"')
 
