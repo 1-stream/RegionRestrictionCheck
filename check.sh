@@ -2933,7 +2933,7 @@ function MediaUnlockTest_KBSDomestic() {
         echo -n -e "\r KBS Domestic:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'Domestic\\\":\ true' )
+    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'Domestic\\": true' )
     if [ -z "$result1" ]; then
         echo -n -e "\r KBS Domestic:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     else
@@ -2974,7 +2974,7 @@ function MediaUnlockTest_KBSAmerican() {
         echo -n -e "\r KBS American:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'American\\\":\ true' )
+    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'American\\": true' )
     if [ -z "$result1" ]; then
         echo -n -e "\r KBS American:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     else
