@@ -3791,6 +3791,21 @@ function AIUnlockTest_Copilot() {
     fi
 }
 
+function AIUnlockTest_Claude(){
+    local result=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -s -o /dev/null -L --max-time 10 -w '%{url_effective}%{http_code}\n' "https://claude.ai/" 2>&1 | grep -E 'unavailable|403|000')
+
+    if [ -n "$result" ]; then
+        echo -n -e "\r Claude:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    else
+        echo -n -e "\r Claude:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    fi
+
+    echo -n -e "\r Claude:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+    return
+}
+
 function MediaUnlockTest_RakutenMagazine() {
     local result=$(curl $curlArgs -${1} -sL --write-out %{http_code} --output /dev/null --max-time 10 "https://data-cloudauthoring.magazine.rakuten.co.jp/rem_repository/////////.key" 2>&1)
 
@@ -4466,9 +4481,10 @@ function AI_UnlockTest() {
     MediaUnlockTest_Sora ${1} &
     AIUnlockTest_Gemini_location ${1} &
     AIUnlockTest_Copilot ${1} &
+    AIUnlockTest_Claude ${1} &
     )
     wait
-    local array=("ChatGPT" "Copilot" "Gemini" "Sora:" )
+    local array=("ChatGPT" "Copilot" "Gemini" "Sora:" "Claude:" )
     echo_Result ${result} ${array}
 
     echo "======================================="
