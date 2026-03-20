@@ -3792,7 +3792,7 @@ function AIUnlockTest_Copilot() {
 }
 
 function AIUnlockTest_Claude(){
-    local result=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -s -o /dev/null -L --max-time 10 -w '%{url_effective}%{http_code}\n' "https://claude.ai/" 2>&1 | grep -E 'unavailable|403|000')
+    local result=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -s -o /dev/null -L --max-time 10 -w '%{url_effective}%{http_code}\n' "https://claude.ai/" 2>&1 | grep -E 'unavailable|000')
 
     if [ -n "$result" ]; then
         echo -n -e "\r Claude:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
