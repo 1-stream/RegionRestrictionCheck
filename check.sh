@@ -225,7 +225,7 @@ ShowRegion() {
 }
 
 function detect_isp() {
-    local lan_ip=$(echo "$1" | grep -Eo "^(10\.[0-9]{1,3}\.[0-9]{1,3}\.((0\/([89]|1[0-9]|2[0-9]|3[012]))|([0-9]{1,3})))|(172\.(1[6789]|2\[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3}(\/(1[6789]|2[0-9]|3[012]))?)|(192\.168\.[0-9]{1,3}\.[0-9]{1,3}(\/(1[6789]|2[0-9]|3[012]))?)$")
+    local lan_ip=$(echo "$1" | grep -Eo "^(10\.[0-9]{1,3}\.[0-9]{1,3}\.((0/([89]|1[0-9]|2[0-9]|3[012]))|([0-9]{1,3})))|(172\.(1[6789]|2\[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3}(/(1[6789]|2[0-9]|3[012]))?)|(192\.168\.[0-9]{1,3}\.[0-9]{1,3}(/(1[6789]|2[0-9]|3[012]))?)$")
     if [ -n "$lan_ip" ]; then
         echo "LAN"
         return
@@ -517,7 +517,7 @@ function MediaUnlockTest_Dazn() {
 }
 
 function MediaUnlockTest_HuluJP() {
-    local result=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -s -o /dev/null -L --max-time 10 -w '%{url_effective}%{http_code}\n' "https://id.hulu.jp" 2>&1 | grep -E 'restrict|403')
+    local result=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -s -o /dev/null -L --max-time 10 -w '%{url_effective}%{http_code}\n' "https://id.hulu.jp" -H 'Priority: u=1' -H 'Accept: */*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: none' -H 'Sec-Ch-Ua-Mobile: ?0' -H 'Sec-Ch-Ua-Platform: ?0' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: none' -H 'Sec-Fetch-User: ?1' -H 'Upgrade-Insecure-Requests: 1' 2>&1 | grep -E 'restrict|403|000')
 
     if [ -n "$result" ]; then
         echo -n -e "\r Hulu Japan:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
@@ -2933,7 +2933,7 @@ function MediaUnlockTest_KBSDomestic() {
         echo -n -e "\r KBS Domestic:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'Domestic\\\":\ true' )
+    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'Domestic\\": true' )
     if [ -z "$result1" ]; then
         echo -n -e "\r KBS Domestic:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     else
@@ -2974,7 +2974,7 @@ function MediaUnlockTest_KBSAmerican() {
         echo -n -e "\r KBS American:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'American\\\":\ true' )
+    local result1=$(echo "$tmpresult" | grep "ipck" | grep 'American\\": true' )
     if [ -z "$result1" ]; then
         echo -n -e "\r KBS American:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     else
@@ -3703,7 +3703,7 @@ function MediaUnlockTest_BilibiliAnimeNew() {
         return
     else
         local country=$(echo $tmp | jq '.data.country' | tr -d '"' )
-        echo -n -e "\r Bilibili Anime:\t\t\t${Font_Red}No${Font_Suffix}  ${Font_Green}(Country: $country)${Font_Suffix}\n"
+        echo -n -e "\r Bilibili Anime:\t\t\t${Font_Red}No  (Country: $country)${Font_Suffix}\n"
         return
     fi
 }
@@ -3955,13 +3955,13 @@ function MediaUnlockTest_DStv() {
 function MediaUnlockTest_beIN_Sports() {
     local result=$(curl $curlArgs -${1} -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://d6m3sfa7e58z5.cloudfront.net/out/v1/3b0660e05eed4d769521eb0275aab3ab/index.mpd")
     if [ "$result" = "000" ]; then
-        echo -n -e "\r beIN Sports:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        echo -n -e "\r beIN Sports:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
     elif [ "$result" = "200" ]; then
-        echo -n -e "\r beIN Sports:\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        echo -n -e "\r beIN Sports:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
     elif [ "$result" = "403" ]; then
-        echo -n -e "\r beIN Sports:\t\t\t${Font_Red}No${Font_Suffix}\n"
+        echo -n -e "\r beIN Sports:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     else
-        echo -n -e "\r beIN Sports:\t\t\t${Font_Red}Failed (Unexpected Result: $result)${Font_Suffix}\n"
+        echo -n -e "\r beIN Sports:\t\t\t\t${Font_Red}Failed (Unexpected Result: $result)${Font_Suffix}\n"
     fi
 }
 
