@@ -3791,6 +3791,21 @@ function AIUnlockTest_Copilot() {
     fi
 }
 
+function AIUnlockTest_Claude(){
+    local result=$(curl $curlArgs -${1} --user-agent "${UA_Browser}" -s -o /dev/null -L --max-time 10 -w '%{url_effective}%{http_code}\n' "https://claude.ai/" 2>&1 | grep -E 'unavailable|000')
+
+    if [ -n "$result" ]; then
+        echo -n -e "\r Claude:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    else
+        echo -n -e "\r Claude:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    fi
+
+    echo -n -e "\r Claude:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+    return
+}
+
 function MediaUnlockTest_RakutenMagazine() {
     local result=$(curl $curlArgs -${1} -sL --write-out %{http_code} --output /dev/null --max-time 10 "https://data-cloudauthoring.magazine.rakuten.co.jp/rem_repository/////////.key" 2>&1)
 
@@ -3963,6 +3978,21 @@ function MediaUnlockTest_beIN_Sports() {
     else
         echo -n -e "\r beIN Sports:\t\t\t\t${Font_Red}Failed (Unexpected Result: $result)${Font_Suffix}\n"
     fi
+}
+
+function MediaUnlockTest_Wikipedia_Editable(){
+    local tmpresult=$(curl $curlArgs -${1} -s 'https://en.wikipedia.org/w/index.php?title=Wikipedia:WikiProject_on_open_proxies&action=edit' --user-agent "${UA_Browser}")
+    if [ -z "$tmpresult" ]; then
+        echo -n -e "\r Wikipedia Editability:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    local result=$(echo "$tmpresult" | grep -i 'This IP address has been')
+    if [ -z "$result" ]; then
+        echo -n -e "\r Wikipedia Editability:\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    fi
+
+    echo -n -e "\r Wikipedia Editability:\t\t\t${Font_Red}No${Font_Suffix}\n"
 }
 
 
@@ -4250,6 +4280,7 @@ function Global_UnlockTest() {
         MediaUnlockTest_Viu.com ${1} &
         MediaUnlockTest_YouTube_CDN ${1} &
         MediaUnlockTest_NetflixCDN ${1} &
+        MediaUnlockTest_Wikipedia_Editable ${1} &
         MediaUnlockTest_Spotify ${1} &
         # MediaUnlockTest_Instagram.Music ${1}
         GameTest_Steam ${1} &
@@ -4270,6 +4301,7 @@ function Global_UnlockTest() {
         # MediaUnlockTest_Viu.com ${1} &
         MediaUnlockTest_YouTube_CDN ${1} &
         MediaUnlockTest_NetflixCDN ${1} &
+        # MediaUnlockTest_Wikipedia_Editable ${1} &
         MediaUnlockTest_Spotify ${1} &
         # MediaUnlockTest_Instagram.Music ${1}
         # GameTes t_Steam ${1} &
@@ -4278,7 +4310,7 @@ function Global_UnlockTest() {
         )
     fi
     wait
-    local array=("Dazn:" "HotStar:" "Disney+:" "Netflix:" "YouTube Premium:" "Amazon Prime Video:" "TVBAnywhere+:" "iQyi Oversea:" "Bilibili Anime:" "Viu.com:" "Tiktok" "YouTube CDN:" "Google" "YouTube Region:" "Netflix Preferred CDN:" "Spotify" "Steam Currency:" "Instagram")
+    local array=("Dazn:" "HotStar:" "Disney+:" "Netflix:" "YouTube Premium:" "Amazon Prime Video:" "TVBAnywhere+:" "iQyi Oversea:" "Bilibili Anime:" "Viu.com:" "Tiktok" "YouTube CDN:" "Google" "YouTube Region:" "Netflix Preferred CDN:" "Wikipedia" "Spotify" "Steam Currency:" "Instagram")
     echo_Result ${result} ${array}
     echo "======================================="
 }
@@ -4466,9 +4498,10 @@ function AI_UnlockTest() {
     MediaUnlockTest_Sora ${1} &
     AIUnlockTest_Gemini_location ${1} &
     AIUnlockTest_Copilot ${1} &
+    AIUnlockTest_Claude ${1} &
     )
     wait
-    local array=("ChatGPT" "Copilot" "Gemini" "Sora:" )
+    local array=("ChatGPT" "Copilot" "Gemini" "Sora:" "Claude:" )
     echo_Result ${result} ${array}
 
     echo "======================================="
