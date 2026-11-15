@@ -491,6 +491,32 @@ function ip_check_ipdata() {
     return
 }
 
+function ip_check_internetdata() {
+    if [[ "${1}" == "6" ]];then
+        local tmp=$(curl $curlArgs -A "$UA" -m 10 -SsL "https://api.internetdata.io/${myip6}" 2>&1)
+    else
+        local tmp=$(curl $curlArgs -${1} -A "$UA" -m 10 -SsL "https://api.internetdata.io/myip" 2>&1)
+    fi
+    if [[ "$tmp" == "curl"* ]]; then
+        echo -n -e "\r InternetData:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    local error=$(echo "$tmp" | jq ".error" | tr -d '"')
+    if [ "$error" != "null" ]; then
+        echo -n -e "\r InternetData:\t\t\t${Font_Red}Failed ($error)${Font_Suffix}\n"
+        return
+    fi
+    local result=$(echo "$tmp" | jq ".location.country" | tr -d '"')
+    local result_city=$(echo "$tmp" | jq ".location.city" | tr -d '"')
+    local result_region=$(echo "$tmp" | jq ".location.region" | tr -d '"')
+    if [ "$result_city" == "null" ] && [ "$result_region" == "null" ]; then
+        echo -n -e "\r InternetData:\t\t\t${Font_Yellow}${result}${Font_Suffix}\n"
+        return
+    fi
+    echo -n -e "\r InternetData:\t\t\t${Font_Yellow}${result} ($result_city/$result_region)${Font_Suffix}\n"
+    return
+}
+
 
 function isp_check_bgptools() {
     local tmp=$(curl $curlArgs -${1} -A "$UA" -m 10 -SsL "https://bgp.tools/whoami" 2>&1)
@@ -583,6 +609,7 @@ function isp_check_ipdata() {
 # ip_check_ipstack 4
 # ip_check_ipwhoisio 4
 # ip_check_ipdata 4
+# ip_check_internetdata 4
 # isp_check_bgptools 4
 # isp_check_ipinfo 4
 # isp_check_ipregistry 4
@@ -609,6 +636,7 @@ function isp_check_ipdata() {
 # ip_check_ipstack 6
 # ip_check_ipwhoisio 6
 # ip_check_ipdata 6
+# ip_check_internetdata 6
 # isp_check_bgptools 6
 # isp_check_ipinfo 6
 # isp_check_ipregistry 6
@@ -644,9 +672,10 @@ function geoiptest() {
         ip_check_ipstack ${1} &
         ip_check_ipwhoisio ${1} &
         ip_check_ipdata ${1} &
+        ip_check_internetdata ${1} &
     )
     wait
-    local array=("ipip.net:" "ipinfo:" "ipapi.co:" "ip2location:" "Maxmind (ip.sb):" "Maxmind (Cloudflare):" "Google:" "ip-api.com:" "ipregistry:" "Tencent Map:" "RIR (RIPE):" "Whois (RIPE):" "Maxmind (RIPE):" "RIPE:" "CZ88:" "ZXNIC:" "LeoMoeAPI:" "ipGeolocation:" "Akamai EdgeScape:" "ipstack:" "ipwhois.io:" "ipdata.co:")
+    local array=("ipip.net:" "ipinfo:" "ipapi.co:" "ip2location:" "Maxmind (ip.sb):" "Maxmind (Cloudflare):" "Google:" "ip-api.com:" "ipregistry:" "Tencent Map:" "RIR (RIPE):" "Whois (RIPE):" "Maxmind (RIPE):" "RIPE:" "CZ88:" "ZXNIC:" "LeoMoeAPI:" "ipGeolocation:" "Akamai EdgeScape:" "ipstack:" "ipwhois.io:" "ipdata.co:" "InternetData:")
     echo_Result ${result} ${array}
 }
 
